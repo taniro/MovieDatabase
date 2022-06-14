@@ -3,7 +3,10 @@ package ufrn.br.moviedatabase;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import ufrn.br.moviedatabase.domain.Filme;
+import ufrn.br.moviedatabase.domain.Usuario;
 import ufrn.br.moviedatabase.repository.FilmeRepository;
 import ufrn.br.moviedatabase.repository.UsuarioRepository;
 
@@ -25,7 +28,10 @@ public class MovieDatabaseApplication {
     @Autowired
     private FilmeRepository filmeRepository;
 
-    //hello
+    @Autowired
+    private UsuarioRepository repository;
+
+
     @PostConstruct
     public void initFilmes() {
 
@@ -37,5 +43,18 @@ public class MovieDatabaseApplication {
         ).collect(Collectors.toList());
 
         filmeRepository.saveAll(filmes);
+
+        List<Usuario> users = Stream.of(
+                new Usuario(1L, "admin", encoder().encode("admin"), false, false, false, true, true),
+                new Usuario(2L, "user1", encoder().encode("user1"), false, false, false, true, false),
+                new Usuario(3L, "user2", encoder().encode("user2"), false, false, false, true, false)
+
+        ).collect(Collectors.toList());
+
+        repository.saveAll(users);
+    }
+
+    public PasswordEncoder encoder() {
+        return new BCryptPasswordEncoder();
     }
 }
