@@ -2,21 +2,25 @@ package ufrn.br.moviedatabase.controller;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.validation.Errors;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import ufrn.br.moviedatabase.domain.Filme;
+import ufrn.br.moviedatabase.service.FileStorageService;
 import ufrn.br.moviedatabase.service.FilmeService;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @Controller
 public class FilmeController {
     private final FilmeService service;
+    FileStorageService fileStorageService;
 
-    public FilmeController(FilmeService service) {
+    public FilmeController(FilmeService service, FileStorageService fileStorageService) {
         this.service = service;
+        this.fileStorageService = fileStorageService;
     }
 
 
@@ -52,8 +56,24 @@ public class FilmeController {
     }
 
     @PostMapping("salvar")
-    public String doSalvaFilme(@ModelAttribute Filme f){
-       service.update(f);
-        return "redirect:/";
+    public String doSalvaFilme(@ModelAttribute @Valid Filme f, Errors errors, @RequestParam("file") MultipartFile file, RedirectAttributes redirectAttributes){
+        if (errors.hasErrors()){
+            System.out.println(errors.getAllErrors().stream().toArray());
+            return "produto/cadastrar";
+        }else{
+
+			/*
+			System.out.println(file.getOriginalFilename());
+			System.out.println(file.getContentType());
+			System.out.println(file.getSize());
+			 */
+
+            f.setImagemUrl(file.getOriginalFilename());
+            service.update(f);
+            fileStorageService.save(file);
+
+            redirectAttributes.addAttribute("msg", "Cadastro realizado com sucesso");
+            return "redirect:/";
+        }
     }
 }

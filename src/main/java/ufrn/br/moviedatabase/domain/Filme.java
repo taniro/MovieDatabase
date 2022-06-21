@@ -5,7 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import java.util.Date;
+import javax.validation.constraints.NotBlank;
 
 @Entity
 @NoArgsConstructor
@@ -16,6 +16,7 @@ public class Filme {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotBlank(message = "O título não pode ser em branco")
     String titulo;
     String diretor;
     String lancamento;

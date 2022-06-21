@@ -3,8 +3,11 @@ package ufrn.br.moviedatabase;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.http.CacheControl;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import ufrn.br.moviedatabase.domain.Filme;
 import ufrn.br.moviedatabase.domain.Usuario;
 import ufrn.br.moviedatabase.repository.FilmeRepository;
@@ -14,12 +17,13 @@ import javax.annotation.PostConstruct;
 import java.time.Instant;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 
 @SpringBootApplication
-public class MovieDatabaseApplication {
+public class MovieDatabaseApplication implements WebMvcConfigurer {
 
     public static void main(String[] args) {
         SpringApplication.run(MovieDatabaseApplication.class, args);
@@ -56,5 +60,15 @@ public class MovieDatabaseApplication {
 
     public PasswordEncoder encoder() {
         return new BCryptPasswordEncoder();
+    }
+
+    @Override
+    public void addResourceHandlers(ResourceHandlerRegistry registry) {
+        // Register resource handler for images
+        registry.addResourceHandler("/images/**").addResourceLocations("/WEB-INF/images/")
+                .setCacheControl(CacheControl.maxAge(2, TimeUnit.HOURS).cachePublic());
+		/*
+		registry.addResourceHandler("/images/**").addResourceLocations("/images/")
+		.setCacheControl(CacheControl.maxAge(2, TimeUnit.HOURS).cachePublic());*/
     }
 }
