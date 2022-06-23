@@ -10,13 +10,17 @@ import ufrn.br.moviedatabase.domain.Filme;
 import ufrn.br.moviedatabase.service.FileStorageService;
 import ufrn.br.moviedatabase.service.FilmeService;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import java.time.Instant;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 @Controller
 public class FilmeController {
     private final FilmeService service;
-    FileStorageService fileStorageService;
+    private final FileStorageService fileStorageService;
 
     public FilmeController(FilmeService service, FileStorageService fileStorageService) {
         this.service = service;
@@ -56,18 +60,20 @@ public class FilmeController {
     }
 
     @PostMapping("salvar")
-    public String doSalvaFilme(@ModelAttribute @Valid Filme f, Errors errors, @RequestParam("file") MultipartFile file, RedirectAttributes redirectAttributes){
+    public String doSalvaFilme(@ModelAttribute @Valid Filme f, Errors errors, @RequestParam("file") MultipartFile file, RedirectAttributes redirectAttributes, HttpServletRequest request){
+
         if (errors.hasErrors()){
+            /**
+             * TODO Implementar uma solução para retornar a página adequada (Cadastro ou Editar{id})
+             */
             System.out.println(errors.getAllErrors().stream().toArray());
             return "produto/cadastrar";
         }else{
-
-			/*
+            /*
 			System.out.println(file.getOriginalFilename());
 			System.out.println(file.getContentType());
 			System.out.println(file.getSize());
-			 */
-
+             */
             f.setImagemUrl(file.getOriginalFilename());
             service.update(f);
             fileStorageService.save(file);

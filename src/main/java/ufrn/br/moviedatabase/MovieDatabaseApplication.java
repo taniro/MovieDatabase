@@ -14,8 +14,6 @@ import ufrn.br.moviedatabase.repository.FilmeRepository;
 import ufrn.br.moviedatabase.repository.UsuarioRepository;
 
 import javax.annotation.PostConstruct;
-import java.time.Instant;
-import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -65,8 +63,8 @@ public class MovieDatabaseApplication implements WebMvcConfigurer {
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         // Register resource handler for images
-        registry.addResourceHandler("/images/**").addResourceLocations("/WEB-INF/images/")
-                .setCacheControl(CacheControl.maxAge(2, TimeUnit.HOURS).cachePublic());
+       registry.addResourceHandler("/images/**").addResourceLocations("/WEB-INF/images/")
+               .setCacheControl(CacheControl.maxAge(2, TimeUnit.HOURS).cachePublic());
 		/*
 		registry.addResourceHandler("/images/**").addResourceLocations("/images/")
 		.setCacheControl(CacheControl.maxAge(2, TimeUnit.HOURS).cachePublic());*/
